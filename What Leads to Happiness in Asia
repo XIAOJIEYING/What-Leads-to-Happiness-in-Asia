@@ -1,0 +1,176 @@
+from pandas import read_csv
+import numpy as np
+import matplotlib.pyplot as plt 
+dataset = read_csv('Desktop/Book.csv')
+import seaborn as sns
+p = sns.color_palette(["mediumseagreen", "sandybrown", "royalblue", "orangered", "saddlebrown", "darkorchid"])
+sns.boxplot(x="Life Ladder", y="Country name", data=dataset, palette=p)
+plt.figure
+sns.heatmap(dataset.corr(), cmap="RdYlBu")
+df1 = dataset.groupby('Country name').agg({'Positive affect':'sum'}).
+sort_values(by='Positive affect', ascending = False)
+sns.set_style('whitegrid')
+df1=df1.head(10)
+sns.barplot(y = df1.index,x = df1['Positive affect'], palette = 'Blues_r')
+plt.title('countries with positive emotions', fontsize = 10)
+plt.show()
+df2=dataset.groupby('Country name').agg({'Negative affect':'sum'}).
+sort_values(by='Negative affect', ascending = False)
+sns.set_style('whitegrid')
+df2=df2.head(10)
+sns.barplot(y = df2.index,x = df2['Negative affect'], palette = 'Reds_r')
+plt.title('countries with negative emotions', fontsize = 10)
+plt.show()
+import chart_studio.plotly as py
+import plotly.graph_objs as go
+from plotly.offline import download_plotlyjs, init_notebook_mode, plot, iplot
+data = dict(type = 'choropleth', 
+           locations = dataset['Country name'],
+           locationmode = 'country names',
+           z = dataset['Life Ladder'], 
+           text = dataset['Country name'],
+           colorbar = {'title':'Ladder'},
+           colorscale = "Blues")
+layout = dict(title = 'Life satisfaction ladder 2019', 
+             geo = dict(showframe = False, 
+                       projection = {'type': 'mercator'}))
+choromap = go.Figure(data = [data], layout=layout)
+iplot(choromap)
+
+from sklearn import linear_model
+dataset.fillna(dataset.mean(), inplace=True)
+
+x = dataset[['Social support']].values
+y = dataset['Life Ladder'].values
+
+regr = linear_model.LinearRegression()
+regr.fit(x,y)
+#regr.predict(x_0)
+
+print('Coefficients:', regr.coef_)
+print('Intercept:', regr.intercept_)
+dataset['Social support'].corr(dataset['Life Ladder'], method='pearson')
+sns.jointplot("Social support", "Life Ladder", data=dataset, kind='reg', color='royalblue')
+from sklearn import linear_model
+dataset.fillna(dataset.mean(), inplace=True)
+
+x = dataset[['Log GDP per capita']].values
+y = dataset['Generosity'].values
+
+regr = linear_model.LinearRegression()
+regr.fit(x,y)
+#regr.predict(x_0)
+
+print('Coefficients:', regr.coef_)
+print('Intercept:', regr.intercept_)
+from sklearn import linear_model
+dataset.fillna(dataset.mean(), inplace=True)
+
+x = dataset[['Log GDP per capita']].values
+y = dataset['Life Ladder'].values
+
+regr = linear_model.LinearRegression()
+regr.fit(x,y)
+#regr.predict(x_0)
+
+print('Coefficients:', regr.coef_)
+print('Intercept:', regr.intercept_)
+dataset['Log GDP per capita'].corr(dataset['Life Ladder'], method='pearson')
+sns.jointplot("Log GDP per capita", "Life Ladder", data=dataset, kind='reg', color='royalblue')
+x = dataset[['Generosity']].values
+y = dataset['Life Ladder'].values
+
+regr = linear_model.LinearRegression()
+regr.fit(x,y)
+#regr.predict(x_0)
+
+print('Coefficients:', regr.coef_)
+print('Intercept:', regr.intercept_)
+dataset['Generosity'].corr(dataset['Life Ladder'], method='pearson')
+sns.jointplot("Generosity", "Life Ladder", data=dataset, kind='reg', color='royalblue')
+from sklearn import linear_model
+dataset.fillna(dataset.mean(), inplace=True)
+
+x = dataset[['Freedom to make life choices']].values
+y = dataset['Life Ladder'].values
+
+regr = linear_model.LinearRegression()
+regr.fit(x,y)
+#regr.predict(x_0)
+
+print('Coefficients:', regr.coef_)
+print('Intercept:', regr.intercept_)
+dataset['Freedom to make life choices'].corr(dataset['Life Ladder'], method='pearson')
+sns.jointplot("Freedom to make life choices", "Life Ladder", data=dataset, kind='reg', color='royalblue')
+from sklearn import linear_model
+dataset.fillna(dataset.mean(), inplace=True)
+
+x = dataset[['Confidence in national government']].values
+y = dataset['Life Ladder'].values
+
+regr = linear_model.LinearRegression()
+regr.fit(x,y)
+#regr.predict(x_0)
+
+print('Coefficients:', regr.coef_)
+print('Intercept:', regr.intercept_)
+dataset['Confidence in national government'].corr(dataset['Life Ladder'], method='pearson')
+sns.jointplot("Confidence in national government", "Life Ladder", data=dataset, kind='reg', color='royalblue')
+x = dataset[['Healthy life expectancy at birth']].values
+y = dataset['Life Ladder'].values
+
+regr = linear_model.LinearRegression()
+regr.fit(x,y)
+#regr.predict(x_0)
+
+print('Coefficients:', regr.coef_)
+print('Intercept:', regr.intercept_)
+dataset['Healthy life expectancy at birth'].corr(dataset['Life Ladder'], method='pearson')
+sns.jointplot("Healthy life expectancy at birth", "Life Ladder", data=dataset, kind='reg', color='royalblue')
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.tree import DecisionTreeRegressor
+from sklearn.metrics import mean_squared_error
+
+x = dataset.drop(['Life Ladder','Country name'],axis=1)
+y = dataset['Life Ladder']
+x_train,x_test,y_train,y_test = train_test_split(x,y,test_size=0.2,random_state=1)
+
+lr = LinearRegression()
+lr.fit(x_train,y_train)
+predict_lr = lr.predict(x_test)
+print('mean_squared_error:' , mean_squared_error(y_test,predict_lr))
+plt.scatter(y_test,predict_lr,color='c')
+plt.scatter(y_test,y_test,color='r')
+plt.xlabel('y in test')
+plt.ylabel('prediction')
+plt.title('LinearRegression')
+print(lr.score(x_test,y_test))
+rfg = RandomForestRegressor()
+rfg.fit(x_train,y_train)
+predict_rfg = rfg.predict(x_test)
+print('mean_squared_error:' , mean_squared_error(y_test,predict_rfg))
+plt.scatter(y_test,predict_rfg)
+plt.scatter(y_test,y_test,color='r')
+plt.xlabel('y in test')
+plt.ylabel('prediction')
+plt.title('RandomForestRegressor')
+print(rfg.score(x_test,y_test))dtr = DecisionTreeRegressor()
+dtr.fit(x_train,y_train)
+predict_dtr = dtr.predict(x_test)
+print('mean_squared_error:' , mean_squared_error(y_test,predict_dtr))
+plt.scatter(y_test,predict_dtr)
+plt.scatter(y_test,y_test,color='r')
+plt.xlabel('y in test')
+plt.ylabel('prediction')
+plt.title('DecisionTreeRegressor')
+print(dtr.score(x_test,y_test))
+y = np.array([mean_squared_error(y_test,predict_lr),mean_squared_error(y_test,predict_rfg),
+              mean_squared_error(y_test,predict_dtr)])
+x = ['Linear','RandomForest','DecisionTree']
+
+plt.bar(x,y)
+plt.title('comparision')
+plt.xlabel('Regressor')
+plt.ylabel('mean_squared_error')
